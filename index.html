@@ -1,88 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Image Generator</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { background: #f9fafb; }
-    .pin img { border-radius: 12px; transition: transform 0.3s ease; }
-    .pin img:hover { transform: scale(1.05); }
+    body {
+      background: linear-gradient(to right, #0f172a, #1e3a8a);
+    }
+    .card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
   </style>
 </head>
-<body class="font-sans">
-
+<body class="min-h-screen text-white flex flex-col">
   <!-- Navbar -->
-  <nav class="bg-blue-600 px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-md">
-    <h1 class="text-2xl font-bold text-white">Image Generator</h1>
-    <div class="flex items-center gap-2">
-      <input id="searchInput" type="text" placeholder="Search images..."
-        class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
-      <button id="searchButton" 
-        class="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100">
+  <header class="bg-blue-900/70 backdrop-blur-md shadow-lg p-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <!-- Modern abstract SVG logo -->
+      <svg class="w-10 h-10" viewBox="0 0 24 24" fill="url(#grad1)" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#2563eb;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 
+                 21.02L12 17.77L5.82 21.02L7 14.14L2 
+                 9.27L8.91 8.26L12 2Z"/>
+      </svg>
+
+      <!-- Brand name -->
+      <h1 class="text-2xl font-bold tracking-wide">
+        Image <span class="text-blue-400">Generator</span>
+      </h1>
+    </div>
+
+    <nav class="space-x-6 hidden sm:block">
+      <a href="#" class="hover:text-blue-300">Home</a>
+      <a href="#" class="hover:text-blue-300">About</a>
+    </nav>
+  </header>
+
+  <!-- Main -->
+  <main class="flex-grow container mx-auto px-4 py-10 text-center">
+    <h2 class="text-3xl font-semibold mb-6">Generate Stunning Images Instantly</h2>
+
+    <!-- Search Bar -->
+    <div class="flex justify-center mb-10">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Enter your prompt..."
+        class="w-2/3 md:w-1/2 p-3 rounded-l-2xl border-none outline-none text-black"
+      />
+      <button
+        onclick="generateImage()"
+        class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-r-2xl font-semibold"
+      >
         Search
       </button>
     </div>
-  </nav>
 
-  <!-- Gallery Section -->
-  <section class="p-6">
-    <h2 class="text-xl font-semibold mb-4 text-blue-700">Search Results</h2>
-    <div id="pinContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-      <!-- Images load here -->
-    </div>
-  </section>
+    <!-- Generated Images -->
+    <div id="imageContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
+  </main>
 
-  <!-- About Section -->
-  <section class="bg-white p-6 mt-8 shadow-inner">
-    <h2 class="text-2xl font-bold text-blue-700 mb-3">About</h2>
-    <p class="text-gray-700 leading-relaxed">
-      Image Generator is a simple web app powered by the Unsplash API. 
-      You can search for any image you like—whether it’s nature, technology, 
-      or abstract art—and instantly view high-quality results. 
-      Just type your keyword in the search bar and click search.
-    </p>
-  </section>
+  <!-- Footer -->
+  <footer class="bg-blue-900/80 text-center py-4 text-sm">
+    © 2025 Image Generator. All rights reserved.
+  </footer>
 
+  <!-- JavaScript -->
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const searchInput = document.getElementById("searchInput");
-      const searchButton = document.getElementById("searchButton");
-      const pinContainer = document.getElementById("pinContainer");
+    async function generateImage() {
+      const query = document.getElementById("searchInput").value.trim();
+      const container = document.getElementById("imageContainer");
+      container.innerHTML = "";
 
-      // Function to add images
-      function addPin(url) {
-        const pin = document.createElement("div");
-        pin.className = "pin shadow-lg overflow-hidden";
-        pin.innerHTML = `<img src="${url}" alt="Pin" class="w-full h-auto">`;
-        pinContainer.appendChild(pin);
+      if (!query) {
+        alert("Please enter a prompt!");
+        return;
       }
 
-      // Function to fetch from Unsplash
-      async function fetchImages(query) {
-        try {
-          const response = await fetch(
-            `https://api.unsplash.com/search/photos?page=1&query=${query}&client_id=0t8am1-lE4-2I8DsAI-KQtNbPy01-z5pnLleYx_-q7M`
-          );
-          const data = await response.json();
-          pinContainer.innerHTML = ""; // clear old results
-          data.results.forEach(result => addPin(result.urls.small));
-        } catch (error) {
-          console.error("Error fetching images:", error);
-        }
-      }
+      // Using Unsplash for demo (free API)
+      const url = `https://source.unsplash.com/600x400/?${query}`;
 
-      // Search button click
-      searchButton.addEventListener("click", () => {
-        const query = searchInput.value.trim();
-        if (query) fetchImages(query);
-      });
-
-      // Default images on load
-      fetchImages("nature");
-    });
+      const card = document.createElement("div");
+      card.className = "card bg-white rounded-xl overflow-hidden shadow-md";
+      card.innerHTML = `
+        <img src="${url}" alt="${query}" class="w-full h-60 object-cover" />
+        <div class="p-4 text-black">
+          <h3 class="font-bold text-lg mb-2 capitalize">${query}</h3>
+          <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">📌 Pin</button>
+        </div>
+      `;
+      container.appendChild(card);
+    }
   </script>
-
 </body>
-</html>
+  </html>
