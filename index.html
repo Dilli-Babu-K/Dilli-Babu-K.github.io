@@ -1,39 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Generator</title>
-    <link rel="shortcut icon" type="image/x-icon" href="/logo.png" />
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Generator</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>Image Generator</h1>
-        <button id="addPinButton">Add Pin</button>
-        <form id="searchForm">
-            <input type="text" id="searchInput" placeholder="Search images...">
-            <button type="submit">Search</button>
-        </form>
-        <input type="file" id="uploadInput" title="Upload Image">
-    </header>
-    <br/>
-    <main id="pinContainer">
-        <!-- Pins will be dynamically added here -->
-    </main>
 
-    <div id="addPinModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <input type="text" id="pinUrlInput" placeholder="Enter image URL">
-            <button id="addPin">Add Pin</button>
-        </div>
-    </div>
-    <br/>
-    <div id="footer">
-        <P>Image Generator &COPY; 2024</P>
-    </div>
+  <!-- Header -->
+  <header>
+    <h1>✨ Image Generator ✨</h1>
+    <p>Search & Pin beautiful images instantly</p>
+  </header>
 
-    <script src="script.js"></script>
+  <!-- Search Section -->
+  <section class="search-container">
+    <input type="text" placeholder="Search images..." class="searchInput">
+    <button class="searchButton">🔍 Search</button>
+  </section>
+
+  <!-- Image Grid -->
+  <section class="image-grid">
+    <div class="image-card">
+      <img src="https://source.unsplash.com/400x300/?nature,forest" alt="nature">
+      <button class="pin-btn">📌 Pin</button>
+    </div>
+    <div class="image-card">
+      <img src="https://source.unsplash.com/400x300/?technology,future" alt="tech">
+      <button class="pin-btn">📌 Pin</button>
+    </div>
+    <div class="image-card">
+      <img src="https://source.unsplash.com/400x300/?art,painting" alt="art">
+      <button class="pin-btn">📌 Pin</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>©  Image Generator </p>
+  </footer>
+
 </body>
 </html>
