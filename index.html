@@ -47,8 +47,20 @@
   <!-- Gallery Section -->
   <main class="container mx-auto p-6 md:p-8">
     <h2 class="text-2xl font-bold text-blue-400 mb-6">Search Results</h2>
-    <div id="pinContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      <!-- Images will be loaded here dynamically -->
+    
+    <!-- Full-screen Image View -->
+    <div id="image-view-container" class="flex flex-col items-center justify-center p-4 bg-gray-800 rounded-xl shadow-lg">
+      <div class="w-full max-w-3xl mb-4">
+        <img id="full-image" src="" alt="Generated Image" class="w-full h-auto object-contain rounded-lg shadow-md" style="min-height: 400px;">
+      </div>
+      <div class="flex space-x-4">
+        <button id="prevBtn" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300">
+          Previous
+        </button>
+        <button id="nextBtn" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-300">
+          Next
+        </button>
+      </div>
     </div>
     
     <!-- Loading and Error States -->
@@ -81,16 +93,29 @@
     document.addEventListener("DOMContentLoaded", () => {
       const searchInput = document.getElementById("searchInput");
       const searchButton = document.getElementById("searchButton");
-      const pinContainer = document.getElementById("pinContainer");
+      const fullImage = document.getElementById("full-image");
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
       const loadingIndicator = document.getElementById("loading");
       const errorMessage = document.getElementById("error-message");
+      const imageViewContainer = document.getElementById("image-view-container");
 
-      // Function to add images to the gallery
-      function addPin(url) {
-        const pin = document.createElement("div");
-        pin.className = "pin shadow-lg overflow-hidden bg-gray-800 rounded-xl transform hover:scale-105 transition-transform duration-300 cursor-pointer";
-        pin.innerHTML = `<img src="${url}" alt="Generated Image" class="w-full h-auto object-cover">`;
-        pinContainer.appendChild(pin);
+      let images = [];
+      let currentIndex = 0;
+
+      function updateImage() {
+        if (images.length > 0) {
+          fullImage.src = images[currentIndex];
+          fullImage.classList.remove('hidden');
+          imageViewContainer.classList.remove('hidden');
+          // Update button states
+          prevBtn.disabled = currentIndex === 0;
+          nextBtn.disabled = currentIndex === images.length - 1;
+        } else {
+          fullImage.src = '';
+          fullImage.classList.add('hidden');
+          imageViewContainer.classList.add('hidden');
+        }
       }
 
       // Function to fetch images from the Unsplash API
@@ -98,7 +123,9 @@
         // Show loading indicator and clear previous results
         loadingIndicator.classList.remove('hidden');
         errorMessage.classList.add('hidden');
-        pinContainer.innerHTML = ""; 
+        images = [];
+        currentIndex = 0;
+        imageViewContainer.classList.add('hidden');
 
         try {
           const response = await fetch(
@@ -110,9 +137,11 @@
           const data = await response.json();
           
           if (data.results.length === 0) {
-            pinContainer.innerHTML = `<p class="text-gray-400 text-center col-span-full">No results found for "${query}".</p>`;
+            errorMessage.innerHTML = `<p class="text-gray-400 text-center col-span-full">No results found for "${query}".</p>`;
+            errorMessage.classList.remove('hidden');
           } else {
-            data.results.forEach(result => addPin(result.urls.small));
+            images = data.results.map(result => result.urls.regular); // Use 'regular' for larger images
+            updateImage();
           }
         } catch (error) {
           console.error("Error fetching images:", error);
@@ -122,6 +151,21 @@
           loadingIndicator.classList.add('hidden');
         }
       }
+
+      // Event listeners for navigation buttons
+      prevBtn.addEventListener('click', () => {
+        if (currentIndex > 0) {
+          currentIndex--;
+          updateImage();
+        }
+      });
+
+      nextBtn.addEventListener('click', () => {
+        if (currentIndex < images.length - 1) {
+          currentIndex++;
+          updateImage();
+        }
+      });
 
       // Event listener for the search button
       searchButton.addEventListener("click", () => {
